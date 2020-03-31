@@ -18,6 +18,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import seedu.address.logic.commands.general.CommandResult;
+import seedu.address.logic.commands.general.DisplayCommand;
 import seedu.address.logic.commands.general.exceptions.CommandException;
 import seedu.address.logic.commands.pet.AddPetCommand;
 import seedu.address.logic.parser.general.exceptions.ParseException;
@@ -61,12 +63,11 @@ public class LogicManagerTest {
         assertCommandException(deleteCommand, MESSAGE_INVALID_PET_DISPLAYED_INDEX);
     }
 
-    // Restore after display command is added, no other command with similar behavior
-    //    @Test
-    //    public void execute_validCommand_success() throws Exception {
-    //        String listCommand = ListCommand.COMMAND_WORD + " 1";
-    //        assertCommandSuccess(addCommand, ListCommand.MESSAGE_SUCCESS, model);
-    //    }
+    @Test
+    public void execute_validCommand_success() throws Exception {
+        String listCommand = DisplayCommand.COMMAND_WORD;
+        assertCommandSuccess(listCommand, DisplayCommand.MESSAGE_SUCCESS, model);
+    }
 
     @Test
     public void execute_storageThrowsIoException_throwsCommandException() {
@@ -91,6 +92,20 @@ public class LogicManagerTest {
     @Test
     public void getFilteredDisplayList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredDisplayList().remove(0));
+    }
+
+    /**
+     * Executes the command and confirms that
+     * - no exceptions are thrown <br>
+     * - the feedback message is equal to {@code expectedMessage} <br>
+     * - the internal model manager state is the same as that in {@code expectedModel} <br>
+     * @see #assertCommandFailure(String, Class, String, Model)
+     */
+    private void assertCommandSuccess(String inputCommand, String expectedMessage,
+                                      Model expectedModel) throws CommandException, ParseException {
+        CommandResult result = logic.execute(inputCommand);
+        assertEquals(expectedMessage, result.getFeedbackToUser());
+        assertEquals(expectedModel, model);
     }
 
     /**
